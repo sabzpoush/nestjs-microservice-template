@@ -2,8 +2,8 @@ import { Global, Module } from '@nestjs/common';
 import { ClientProxy, ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import {
-  SMARTPADEL_SERVICE_CLINT_PROXY_NAME,
-  SMARTPADEL_SERVICE_NAME,
+  SERVICE_CLINT_PROXY_NAME,
+  SERVICE_NAME,
 } from '../common/info/microservice.info';
 
 @Global()
@@ -12,18 +12,18 @@ import {
     ClientsModule.registerAsync({
       clients: [
         {
-          name: SMARTPADEL_SERVICE_NAME,
+          name: SERVICE_NAME,
           useFactory: (configService: ConfigService) => {
             return {
               transport: Transport.RMQ,
               options: {
                 urls: [
                   configService.getOrThrow<string>(
-                    'SMARTPADEL_SERVICE_RABBIT_MQ_URL',
+                    'SERVICE_RABBIT_MQ_URL',
                   ),
                 ],
                 queue: configService.get<string>(
-                  'SMARTPADEL_SERVICE_RABBIT_MQ_QUEUE_NAME',
+                  'SERVICE_RABBIT_MQ_QUEUE_NAME',
                 ),
               },
             };
@@ -35,13 +35,13 @@ import {
   ],
   providers: [
     {
-      provide: SMARTPADEL_SERVICE_CLINT_PROXY_NAME,
+      provide: SERVICE_CLINT_PROXY_NAME,
       useFactory: (client: ClientProxy) => {
         return client;
       },
-      inject: [SMARTPADEL_SERVICE_NAME],
+      inject: [SERVICE_NAME],
     },
   ],
-  exports: [SMARTPADEL_SERVICE_CLINT_PROXY_NAME],
+  exports: [SERVICE_CLINT_PROXY_NAME],
 })
 export class MicroservicesModule {}
